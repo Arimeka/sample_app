@@ -32,6 +32,35 @@ describe "Static pages" do
         end
       end
     end
+
+    describe "side bar for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+
+      describe "with one micropost" do
+        before do
+          FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+          sign_in user
+          visit root_path
+        end
+        it "should contain a single micropost with correct pluralization" do
+          page.should_not have_selector('section/span', text: /microposts$/)
+          page.should have_selector('section/span', text: /1 micropost$/)
+        end
+      end
+
+      describe "with two microposts" do
+        before do
+          FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+          FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+          sign_in user
+          visit root_path
+        end
+        it "should contain a two microposts with correct pluralization" do
+          page.should_not have_selector('section/span', text: /micropost$/)
+          page.should have_selector('section/span', text: /2 microposts$/)
+        end
+      end
+    end
   end
 
   describe "Help page" do
